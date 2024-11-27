@@ -1,14 +1,16 @@
+import json
 from django.http import JsonResponse
 from datetime import datetime
 
 from useraccount.serializers import UserDetailSerializer
-from .payment import PaymentModel, create_pay_url, create_payment_payos_request
+from .payment import PaymentModel, create_pay_url, create_payment_payos_request, isValidData
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework_simplejwt.tokens import AccessToken
 from .forms import PropertyForm
 from .models import Property, Reservation
 from .serializers import PropertiesListSerializer, PropertiesDetailSerializer, ReservationDetailSerializer, ReservationsListSerializer
 from useraccount.models import User
+from django.conf import settings
 
 @api_view(['GET'])
 @authentication_classes([])
@@ -198,4 +200,25 @@ def cancel_reservation(request, reservation_id):
     reservation.status = 'CANCELLED'
     reservation.save()
 
+    return JsonResponse({'success': True})
+
+
+@api_view(['POST'])
+@authentication_classes([])  # No authentication
+@permission_classes([]) 
+def payment_webhook(request):
+    webhook_data = json.loads(request.body)
+ 
+    # check the signature
+    #signature = webhook_data.get('signature', '')
+    # is_valid = isValidData(webhook_data, signature, settings.PAYMENT['CHECKSUM_KEY'])
+    # if not is_valid:
+    #     return JsonResponse({'success': False})
+
+
+    # Save the payment data
+    data = webhook_data.get('data', '')
+    order_code = data['orderCode']
+    print('order_code', order_code)
+    Reservation.objects.filter(reservation_code=order_code).update(status='PAID')
     return JsonResponse({'success': True})

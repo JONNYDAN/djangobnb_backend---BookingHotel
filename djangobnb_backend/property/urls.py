@@ -6,6 +6,7 @@ from . import api
 
 urlpatterns = [
     path('', api.properties_list, name='api_properties_list'),
+    path('payment/webhook', api.payment_webhook, name='api_properties_list'),
     path('create/', api.create_property, name='api_create_property'),
     path('reservations/<uuid:reservation_id>/cancel', api.cancel_reservation, name='api_cancel_reservations'),
     path('<uuid:pk>/', api.properties_detail, name='api_properties_detail'),
