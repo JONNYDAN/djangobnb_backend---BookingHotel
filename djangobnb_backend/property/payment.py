@@ -5,6 +5,7 @@ import requests
 import logging
 from typing import Dict
 from datetime import datetime, timedelta
+from django.conf import settings
 # Replace these values with your actual configuration
 CLIENT_ID = ""
 API_KEY = ""
@@ -89,16 +90,16 @@ def create_pay_url(req)-> str:
 
         # Create payment request data
         data =  {
-            "orderCode": 123467,
-            "amount": 1000,
+            "orderCode": req["order_code"],
+            "amount": req["amount"],
             "description": "Payment for booking",
-            "buyerName": "John Doe",
+            "buyerName": req["buyer_name"],
             "buyerEmail": "",
             "buyerPhone": "",
             "buyerAddress": "",
             "items": [],
-            "cancelUrl": "http://localhost:8000",
-            "returnUrl": "http://localhost:8000",
+            "cancelUrl": settings.PAYMENT["PAYMENT_CANCEL_URL"],
+            "returnUrl": settings.PAYMENT["PAYMENT_RETURN_URL"],
             "expiredAt": int(expired_time.timestamp()),
         }
         print(data)

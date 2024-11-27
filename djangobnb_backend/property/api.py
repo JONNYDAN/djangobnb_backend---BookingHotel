@@ -5,7 +5,7 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 from rest_framework_simplejwt.tokens import AccessToken
 from .forms import PropertyForm
 from .models import Property, Reservation
-from .serializers import PropertiesListSerializer, PropertiesDetailSerializer, ReservationsListSerializer
+from .serializers import PropertiesListSerializer, PropertiesDetailSerializer, ReservationDetailSerializer, ReservationsListSerializer
 from useraccount.models import User
 
 @api_view(['GET'])
@@ -145,7 +145,9 @@ def book_property(request, pk):
 
         property = Property.objects.get(pk=pk)
 
-        Reservation.objects.create(
+        count = Reservation.objects.count()
+        reservation = Reservation.objects.create(
+            reservation_code=count+1,
             property=property,
             start_date=start_date,
             end_date=end_date,
@@ -154,9 +156,16 @@ def book_property(request, pk):
             guests=guests,
             created_by=request.user
         )
+        #booking_obj = ReservationDetailSerializer(reservation, many=False)
 
-        # payUrl = create_pay_url(request)
-        # if payUrl:
+        # request_payment = {
+        #     'amount': total_price,
+        #     'order_code': booking_obj["reservation_code"],
+        #     'buyer_name': request.user.first_name,
+        # }
+        # payUrl = create_pay_url(request_payment)
+
+        #if payUrl:
         return JsonResponse({'success': True, 'payment_url': "https://xmentor.vn"})
     except Exception as e:
         print('Error', e)
