@@ -6,6 +6,9 @@ import logging
 from typing import Dict
 from datetime import datetime, timedelta
 from django.conf import settings
+import hmac
+import hashlib
+
 # Replace these values with your actual configuration
 
 API_CREATE_PAYMENT = "https://api-merchant.payos.vn/v2/payment-requests"
@@ -113,3 +116,33 @@ def create_pay_url(req)-> str:
         print("response")
         print(pay_data)
         return pay_data["data"]["checkoutUrl"]
+
+
+
+def convertObjToQueryStr(obj: dict) -> str:
+    query_string = []
+
+    for key, value in obj.items():
+        value_as_string = ""
+        if isinstance(value, (int, float, bool)):
+            value_as_string = str(value)
+        elif value in [None, 'null', 'NULL']:
+            value_as_string = ""
+        elif isinstance(value, list):
+            value_as_string = json.dumps([sortObjDataByKey(item) for item in value], separators=(',', ':')).replace('None', 'null')
+        else:
+            value_as_string = str(value)
+        query_string.append(f"{key}={value_as_string}")
+
+    return "&".join(query_string)
+
+def sortObjDataByKey(obj: dict) -> dict:
+    return dict(sorted(obj.items()))
+
+def isValidData(data,signature,key):
+    sorted_data_by_key = sortObjDataByKey(data)
+    data_query_str = convertObjToQueryStr(sorted_data_by_key)
+    print(data_query_str)
+    data_to_signature =  hmac.new(key.encode("utf-8"), msg=data_query_str.encode("utf-8"), digestmod=hashlib.sha256).hexdigest()
+
+    return data_to_signature == signature
