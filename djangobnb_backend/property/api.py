@@ -1,5 +1,7 @@
 from django.http import JsonResponse
 from datetime import datetime
+
+from useraccount.serializers import UserDetailSerializer
 from .payment import PaymentModel, create_pay_url, create_payment_payos_request
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework_simplejwt.tokens import AccessToken
@@ -156,17 +158,19 @@ def book_property(request, pk):
             guests=guests,
             created_by=request.user
         )
-        #booking_obj = ReservationDetailSerializer(reservation, many=False)
+        booking_obj = ReservationDetailSerializer(reservation, many=False)
 
-        # request_payment = {
-        #     'amount': total_price,
-        #     'order_code': booking_obj["reservation_code"],
-        #     'buyer_name': request.user.first_name,
-        # }
-        # payUrl = create_pay_url(request_payment)
-
-        #if payUrl:
-        return JsonResponse({'success': True, 'payment_url': "https://xmentor.vn"})
+        user_obj = UserDetailSerializer(request.user, many=False)
+    
+        request_payment = {
+            'amount': total_price,
+            'order_code': booking_obj["reservation_code"].value,
+            'buyer_name': user_obj["name"].value,
+        }
+        print('request_payment', request_payment)
+        
+        payUrl = create_pay_url(request_payment)
+        return JsonResponse({'success': True, 'payment_url': payUrl })
     except Exception as e:
         print('Error', e)
 
