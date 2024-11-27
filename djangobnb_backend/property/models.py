@@ -29,8 +29,9 @@ class Property(models.Model):
 class Reservation(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     property = models.ForeignKey(Property, related_name='reservations', on_delete=models.CASCADE)
-    start_date = models.DateField()
-    end_date = models.DateField()
+    start_date = models.DateField( blank=True)
+    status = models.CharField(max_length=255, default='PENDING')
+    end_date = models.DateField( blank=True)
     number_of_nights = models.IntegerField()
     guests = models.IntegerField()
     total_price = models.FloatField()

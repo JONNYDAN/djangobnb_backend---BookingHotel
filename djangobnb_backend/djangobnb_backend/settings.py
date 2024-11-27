@@ -55,6 +55,7 @@ ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_VERIFICATION = None
 
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -210,3 +211,10 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+PAYMENT = {
+    "CLIENT_ID": os.environ.get("CLIENT_ID"),
+    "API_KEY": os.environ.get("API_KEY"),
+    "PAYMENT_RETURN_URL": os.environ.get("PAYMENT_RETURN_URL"),
+    "PAYMENT_CANCEL_URL": os.environ.get("PAYMENT_CANCEL_URL"),
+}
