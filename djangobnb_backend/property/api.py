@@ -1,5 +1,6 @@
 from django.http import JsonResponse
-
+from datetime import datetime
+from .payment import PaymentModel, create_pay_url, create_payment_payos_request
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework_simplejwt.tokens import AccessToken
 from .forms import PropertyForm
@@ -132,6 +133,7 @@ def create_property(request):
         return JsonResponse({'errors': form.errors.as_json()}, status=400)
 
 
+
 @api_view(['POST'])
 def book_property(request, pk):
     try:
@@ -153,7 +155,9 @@ def book_property(request, pk):
             created_by=request.user
         )
 
-        return JsonResponse({'success': True})
+        # payUrl = create_pay_url(request)
+        # if payUrl:
+        return JsonResponse({'success': True, 'payment_url': "https://xmentor.vn"})
     except Exception as e:
         print('Error', e)
 
@@ -172,3 +176,13 @@ def toggle_favorite(request, pk):
         property.favorited.add(request.user)
 
         return JsonResponse({'is_favorite': True})
+    
+    
+@api_view(['GET'])
+def cancel_reservation(request, reservation_id):
+    reservation = Reservation.objects.get(pk=reservation_id)
+
+    reservation.status = 'CANCELLED'
+    reservation.save()
+
+    return JsonResponse({'success': True})

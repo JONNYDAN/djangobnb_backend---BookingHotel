@@ -40,5 +40,5 @@ class ReservationsListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reservation
         fields = (
-            'id', 'start_date', 'end_date', 'number_of_nights', 'total_price', 'property'
+            'id', 'start_date', 'end_date', 'number_of_nights', 'status', 'total_price', 'property'
         )
