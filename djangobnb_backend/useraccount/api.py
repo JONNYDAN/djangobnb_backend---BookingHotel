@@ -1,8 +1,6 @@
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response
 from django.http import JsonResponse
-from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
 from .models import User
 from .serializers import UserDetailSerializer
 from property.serializers import ReservationsListSerializer

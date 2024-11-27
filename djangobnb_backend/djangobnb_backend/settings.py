@@ -215,6 +215,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 PAYMENT = {
     "CLIENT_ID": os.environ.get("CLIENT_ID"),
     "API_KEY": os.environ.get("API_KEY"),
+    "CHECKSUM_KEY": os.environ.get("CHECKSUM_KEY"),
     "PAYMENT_RETURN_URL": os.environ.get("PAYMENT_RETURN_URL"),
     "PAYMENT_CANCEL_URL": os.environ.get("PAYMENT_CANCEL_URL"),
 }
+

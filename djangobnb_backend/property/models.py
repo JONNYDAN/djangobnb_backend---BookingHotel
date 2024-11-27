@@ -28,6 +28,7 @@ class Property(models.Model):
 
 class Reservation(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    reservation_code = models.IntegerField()
     property = models.ForeignKey(Property, related_name='reservations', on_delete=models.CASCADE)
     start_date = models.DateField( blank=True)
     status = models.CharField(max_length=255, default='PENDING')
