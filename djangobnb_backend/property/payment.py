@@ -7,9 +7,7 @@ from typing import Dict
 from datetime import datetime, timedelta
 from django.conf import settings
 # Replace these values with your actual configuration
-CLIENT_ID = ""
-API_KEY = ""
-CHECKSUM_KEY = ""
+
 API_CREATE_PAYMENT = "https://api-merchant.payos.vn/v2/payment-requests"
 
 class PaymentModel:
@@ -34,8 +32,8 @@ class PaymentModel:
 # Function to create a payment request
 def create_payment_payos_request(payload):
     headers = {
-        'x-client-id': CLIENT_ID,
-        'x-api-key': API_KEY,
+        'x-client-id': settings.PAYMENT["CLIENT_ID"],
+        'x-api-key': settings.PAYMENT["API_KEY"],
     }
 
     print(payload)
@@ -77,13 +75,15 @@ def generate_signature(req: dict) -> str:
     transaction_str = f"amount={req['amount']}&cancelUrl={req['cancelUrl']}&description={req['description']}&orderCode={req['orderCode']}&returnUrl={req['returnUrl']}"
     
     # Generate the HMAC using SHA256
-    secret_key = CHECKSUM_KEY.encode('utf-8')  # Assuming the checksum key is stored in the config
+    print(settings.PAYMENT)
+    secret_key = settings.PAYMENT["CHECKSUM_KEY"].encode('utf-8')  # Assuming the checksum key is stored in the config
     h = hmac.new(secret_key, transaction_str.encode('utf-8'), hashlib.sha256)
     
     # Get the resulting signature and convert it to a hexadecimal string
     signature = h.hexdigest()
     
     return signature
+
 def create_pay_url(req)-> str:
         # Set expiration time to 10 minutes from now
         expired_time = datetime.now() + timedelta(minutes=10)
@@ -91,7 +91,7 @@ def create_pay_url(req)-> str:
         # Create payment request data
         data =  {
             "orderCode": req["order_code"],
-            "amount": req["amount"],
+            "amount": int(req["amount"]),
             "description": "Payment for booking",
             "buyerName": req["buyer_name"],
             "buyerEmail": "",
